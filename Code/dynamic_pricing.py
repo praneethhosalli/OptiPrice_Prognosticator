@@ -48,15 +48,5 @@ except Exception as e:
 
 
 
-# import numpy as np
 
-# # Define a custom input with values for each feature
-# custom_input = np.array([[70, 28, 55, 4.85, 160,]])  # Replace these with your actual test values
-
-# # Reshape to ensure it has the right dimensions (1 row, number of features)
-# custom_input = custom_input.reshape(1, -1)
-
-# # Predict using the trained model
-# predicted_cost = model.predict(custom_input)
-# print("Predicted Historical Cost of Ride:", predicted_cost[0])
 
