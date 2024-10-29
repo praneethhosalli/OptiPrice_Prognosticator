@@ -17,7 +17,7 @@ num_features = 1000
 
 
 # Split the dataset into train, validation, and test sets
-X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_temp, X_test, y_temp, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=0.25, random_state=42)  # 0.25 of 0.8 = 0.2
 
 # Initialize models
