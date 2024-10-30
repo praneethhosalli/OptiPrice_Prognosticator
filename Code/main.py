@@ -2,9 +2,10 @@ from data_preprocessing import load_and_preprocess_data
 from model_training import train_model
 from model_validation import validate_model
 from model_testing import test_model
+from constants import DATASET_PATH, FEATURES_TO_SCALE, TARGET_VARIABLE
 
 # Load and preprocess data
-file_path = 'Dataset/dynamic_pricing.csv'
+file_path = DATASET_PATH
 X_train, X_val, X_test, y_train, y_val, y_test = load_and_preprocess_data(file_path)
 
 # Train the model
