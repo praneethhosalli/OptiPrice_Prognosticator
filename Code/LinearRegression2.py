@@ -1,35 +1,15 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Load the dataset
-# 
-
-# In[26]:
-
 import os
-from Utils.constants import RAW_DIR,RESULTS_DIR
+from Utils.constants import RAW_DIR, RESULTS_DIR
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 import joblib
-file_path = os.path.join(RAW_DIR, "dynamic_pricing.csv")
 
 # Load the dataset
+file_path = os.path.join(RAW_DIR, "dynamic_pricing.csv")
 df = pd.read_csv(file_path)
-df
-
-
-# In[ ]:
-
-
-
-
-
-# In[27]:
-
-
 data=df
 location_factors = {'urban': 1.1, 'suburban': 1.0}
 loyalty_discounts = {'Loyal': 0.95, 'Non-loyal': 1.0}
@@ -63,79 +43,53 @@ data['Adjusted_Cost'] = data.apply(lambda row: dynamic_price_adjustment(
 data
 
 
-# ## Step 1: Select numerical columns as independent variables
+# Apply Label Encoding to all categorical columns
+categorical_columns = ['Location_Category', 'Customer_Loyalty_Status', 'Time_of_Booking', 'Vehicle_Type']
+label_encoders = {}  # Dictionary to store encoders for each column
 
-# In[28]:
+for col in categorical_columns:
+    le = LabelEncoder()
+    df[col] = le.fit_transform(df[col])
+    label_encoders[col] = le  # Save the encoder to decode later if needed
 
+# Separate features (X) and target (y)
+X = df.drop(columns=['Historical_Cost_of_Ride', 'Adjusted_Cost'])
+y = df['Adjusted_Cost']
 
-X = df.select_dtypes(include=['int64', 'float64']).drop(columns=['Historical_Cost_of_Ride'])  # Independent variables
-y = df['Adjusted_Cost']  # Dependent variable
 # Normalize the independent variables
 scaler = MinMaxScaler()
 X_normalized = scaler.fit_transform(X)
 
+# Split the data
+X_train, X_temp, y_train, y_temp = train_test_split(X_normalized, y, test_size=0.3, random_state=42)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
 
-# ## Step 2: Split the data into training, validation, and testing sets
-
-# In[29]:
-
-
-X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)  # 70% training
-X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)  # 15% validation, 15%
-
-
-# 
-# ## Step 3: Train the model
-
-# In[30]:
-
-
+# Train the model
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-
-# ## Step 4: Validate the model
-
-# In[31]:
-
-
+# Validate the model
 y_val_pred = model.predict(X_val)
 val_mae = mean_absolute_error(y_val, y_val_pred)
 val_mse = mean_squared_error(y_val, y_val_pred)
 print(f"Validation MAE: {val_mae}, Validation MSE: {val_mse}")
 
-
-# ## Step 5: Test the model
-
-# In[32]:
-
-
+# Test the model
 y_test_pred = model.predict(X_test)
 test_mae = mean_absolute_error(y_test, y_test_pred)
 test_mse = mean_squared_error(y_test, y_test_pred)
 print(f"Test MAE: {test_mae}, Test MSE: {test_mse}")
 
-
-# ## Step 6: Calculate the error between Y and Y(Predicted) on the test set
-
-# In[33]:
-
-
+# Calculate the error
 errors = y_test - y_test_pred
-errors
 
-
-# ## Step 7: Save Test dataset + Y variable + Y(predicted) + Error into a CSV file
-
-# In[34]:
-
-
+# Save Test dataset + Y variable + Y(predicted) + Error into a CSV file
 test_results = pd.DataFrame(X_test, columns=X.columns)
 test_results['Y_True'] = y_test
 test_results['Y_Predicted'] = y_test_pred
 test_results['Error'] = errors
 
-output_file = os.path.join(RESULTS_DIR, "Linear_Regression_result.csv")
+output_file = os.path.join(RESULTS_DIR, "Linear_Regression_result2.csv")
 test_results.to_csv(output_file, index=False)
 
 print(f"Output data saved to {output_file}")
