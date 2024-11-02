@@ -1,5 +1,5 @@
 import pandas as pd
-df = pd.read_csv('dynamic_pricing.csv')
+df = pd.read_csv ('dynamic_pricing.csv')
 
 """ DYNAMIC PRICING: IDEA TO GENERATE MORE PROFIT THAN THAT IN THE HISTORICAL COST OF RIDE
 
@@ -44,4 +44,3 @@ df['Adjusted_Price'] = df.apply(lambda row: calculate_price(
 
 # Display the DataFrame with the new 'Adjusted_Price' column
 df.head()
-
