@@ -1,0 +1,5 @@
+
+after using linear reg : 
+Validation Mean Squared Error: 5192.844249485731
+Test Mean Squared Error: 5354.255126584468
+
